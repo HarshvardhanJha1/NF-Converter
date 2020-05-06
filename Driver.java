@@ -69,9 +69,14 @@ public class Driver
             {
                 KClosure.add(a);
             }
+    
             while(true)
             {
-                ArrayList<String> OldKClosure = KClosure;
+                ArrayList<String> OldKClosure = new ArrayList<String>();
+                for(String f : KClosure)
+                {
+                    OldKClosure.add(f);
+                } 
                 for(int i=0;i<FD.size();i++)
                 {
                     FunctionalDependency fd = FD.get(i);
