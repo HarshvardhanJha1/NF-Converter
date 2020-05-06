@@ -91,6 +91,8 @@ public class Driver
                         Collections.sort(KClosure);
                     }
                 }
+                Collections.sort(KClosure);
+                Collections.sort(OldKClosure);
                 if(KClosure.equals(OldKClosure))
                 {
                     break;
