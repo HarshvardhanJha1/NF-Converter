@@ -118,10 +118,38 @@ public class Driver
                 CandidateKeys.add(ck);
             }
         }
-
+        ArrayList<String> PrimaryKey = new ArrayList<String>();
+        PrimaryKey = CandidateKeys.get(0);
         for(ArrayList<String> ck : CandidateKeys)
         {
             System.out.println(ck);
         }
-    }   
+
+        //Finding Minimal Cover
+        // for(int i=0;i<FD.size();i++)
+        // {
+        //     FunctionalDependency fd = FD.get(i);
+        //     FD.remove(i);
+        //     boolean minifiedFlag = false;
+        //     for(int j=0;j<fd.B.size();j++)
+        //     {
+        //         ArrayList<String> B1 = new ArrayList<String>();
+        //         B1.add(fd.B.get(j));
+        //         FunctionalDependency newFD = new FunctionalDependency(fd.A, B1);
+        //         FD.add(newFD);
+        //         minifiedFlag=true;
+        //     }
+        //     if(minifiedFlag){i--;}  
+        // }
+
+        // for(int i=0;i<FD.size();i++)
+        // {
+        //     System.out.println(FD.get(i).A+">"+FD.get(i).B);
+        // }
+        Relation r1 = new Relation();
+        r1.PrimaryKeys = PrimaryKey;
+        r1.Attributes = TableAttributes;
+    }
+    
+    
 }
