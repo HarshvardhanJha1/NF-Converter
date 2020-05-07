@@ -124,31 +124,30 @@ public class Driver
         {
             System.out.println(ck);
         }
-
-        //Finding Minimal Cover
-        // for(int i=0;i<FD.size();i++)
-        // {
-        //     FunctionalDependency fd = FD.get(i);
-        //     FD.remove(i);
-        //     boolean minifiedFlag = false;
-        //     for(int j=0;j<fd.B.size();j++)
-        //     {
-        //         ArrayList<String> B1 = new ArrayList<String>();
-        //         B1.add(fd.B.get(j));
-        //         FunctionalDependency newFD = new FunctionalDependency(fd.A, B1);
-        //         FD.add(newFD);
-        //         minifiedFlag=true;
-        //     }
-        //     if(minifiedFlag){i--;}  
-        // }
-
-        // for(int i=0;i<FD.size();i++)
-        // {
-        //     System.out.println(FD.get(i).A+">"+FD.get(i).B);
-        // }
         Relation r1 = new Relation();
         r1.PrimaryKeys = PrimaryKey;
         r1.Attributes = TableAttributes;
+        //Finding Minimal Cover
+        
+        ArrayList<FunctionalDependency> minifiedFD = MinimalCover.findMinimalCover(FD);
+        for(FunctionalDependency fd : minifiedFD)
+        {
+            System.out.println(fd.A+">"+fd.B);
+        }
+
+        // ArrayList<FunctionalDependency> FD1 = new ArrayList<FunctionalDependency>();
+        // ArrayList<String> A1 = new ArrayList<String>();
+        // A1.add("D");
+        // ArrayList<String> A2 = new ArrayList<String>();
+        // A2.add("B");
+        // ArrayList<String> B1 = new ArrayList<String>();
+        // B1.add("A");
+        // ArrayList<String> B2 = new ArrayList<String>();
+        // B2.add("D");
+        // FD1.add(new FunctionalDependency(A1, B1));
+        // FD1.add(new FunctionalDependency(A2, B2));
+        // System.out.println(FindClosure.checkEquivalence(FD1,FD));
+        // System.out.println(FindClosure.checkEquivalence(FD, FD1));
     }
     
     
