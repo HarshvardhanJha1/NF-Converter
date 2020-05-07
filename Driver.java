@@ -127,27 +127,26 @@ public class Driver
         Relation r1 = new Relation();
         r1.PrimaryKeys = PrimaryKey;
         r1.Attributes = TableAttributes;
+        
+        // ArrayList<ArrayList<String>> key = TableUtil.findPrimaryKeys(r1, FD);
+        // System.out.println("Table Util :"+key);
         //Finding Minimal Cover
         
         ArrayList<FunctionalDependency> minifiedFD = MinimalCover.findMinimalCover(FD);
         for(FunctionalDependency fd : minifiedFD)
         {
-            System.out.println(fd.A+">"+fd.B);
+            System.out.println("Functional Dependency"+ fd.A+">"+fd.B);
         }
-
-        // ArrayList<FunctionalDependency> FD1 = new ArrayList<FunctionalDependency>();
-        // ArrayList<String> A1 = new ArrayList<String>();
-        // A1.add("D");
-        // ArrayList<String> A2 = new ArrayList<String>();
-        // A2.add("B");
-        // ArrayList<String> B1 = new ArrayList<String>();
-        // B1.add("A");
-        // ArrayList<String> B2 = new ArrayList<String>();
-        // B2.add("D");
-        // FD1.add(new FunctionalDependency(A1, B1));
-        // FD1.add(new FunctionalDependency(A2, B2));
-        // System.out.println(FindClosure.checkEquivalence(FD1,FD));
-        // System.out.println(FindClosure.checkEquivalence(FD, FD1));
+        // ArrayList<Relation> DecomposedRelations = NormalFormConverter.toThirdNF(r1,minifiedFD);
+        // for(int i=0;i<DecomposedRelations.size();i++)
+        // {
+        //     System.out.println(DecomposedRelations.get(i).Attributes);
+        // }
+        ArrayList<Relation> DecomposedRelations = NormalFormConverter.toSecondNF(r1, FD);
+        for(int i=0;i<DecomposedRelations.size();i++)
+        {
+            System.out.println("Decomposed Relation :" + DecomposedRelations.get(i).Attributes);
+        }
     }
     
     
