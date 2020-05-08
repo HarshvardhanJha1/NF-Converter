@@ -54,6 +54,18 @@ public class NormalFormConverter
             {
                 concatenatedFD.add(f);
             }
+            ArrayList<String> LHS = minifiedFD.get(i).A;
+            Collections.sort(LHS);
+            for(int j=0;j<minifiedFD.size();j++)
+            {
+                Collections.sort(minifiedFD.get(j).A);
+                if(LHS.equals(minifiedFD.get(j).A))
+                {
+                    if(!(concatenatedFD.contains(minifiedFD.get(j).B.get(0)))){
+                        concatenatedFD.add(minifiedFD.get(j).B.get(0));
+                    }
+                }
+            }
             if(concatenatedFD.containsAll(r.Attributes)){
                 DecomposedRelations.add(r);
                 break;
