@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Stack;
 
 public class NormalFormConverter 
 {
@@ -8,6 +7,7 @@ public class NormalFormConverter
     static ArrayList<Relation> toSecondNF(Relation r, ArrayList<FunctionalDependency> FD)
     {
         ArrayList<FunctionalDependency> minimumFD = MinimalCover.findMinimalCover(FD);
+        ArrayList<FunctionalDependency> minifiedFD = MinimalCover.findMinimalCover(FD);
         //Since it is minimumFD, everything on RHS will be atomic
         ArrayList<Relation> DecomposedRelations = new ArrayList<Relation>();
         while(minimumFD.size()!=0)
@@ -42,7 +42,24 @@ public class NormalFormConverter
                 }
             }
         }
-        DecomposedRelations.add(r);
+        // System.out.println("Random Table :"+r.Attributes);
+        for(int i=0;i<minifiedFD.size();i++)
+        {
+            ArrayList<String> concatenatedFD = new ArrayList<String>();
+            for(String f : minifiedFD.get(i).A)
+            {
+                concatenatedFD.add(f);
+            }
+            for(String f : minifiedFD.get(i).B)
+            {
+                concatenatedFD.add(f);
+            }
+            if(concatenatedFD.containsAll(r.Attributes)){
+                DecomposedRelations.add(r);
+                break;
+            }
+        }
+        
         return DecomposedRelations;
     }
 
@@ -53,7 +70,7 @@ public class NormalFormConverter
         Relation br =  new Relation();
         br.Attributes = r.PrimaryKeys;
         br.PrimaryKeys = r.PrimaryKeys;
-        DecomposedRelations.add(br);
+        //DecomposedRelations.add(br);
         for(int i=0;i<minimumFD.size();i++)
         {
             Relation dr = new Relation();
@@ -106,29 +123,8 @@ public class NormalFormConverter
     //Incomplete
     static ArrayList<Relation> toBCNF(Relation r, ArrayList<FunctionalDependency> FD)
     {
-        Stack<Relation> relationStack = new Stack<Relation>();
-        relationStack.add(r);
         ArrayList<Relation> DecomposedRelations = new ArrayList<Relation>();
-        while(!relationStack.empty())
-        {
-            Relation dr = relationStack.pop();
-            for(int j=0;j<FD.size();j++)
-            {
-                FunctionalDependency fd = FD.get(j);
-                ArrayList<String> rhs = fd.B;
-                ArrayList<String> lhs = fd.A;
-                Collections.sort(lhs);
-                ArrayList<String> Keys = TableUtil.findPrimaryKeys(dr, FD).get(0);
-                Collections.sort(Keys);
-                if(!(Keys.containsAll(lhs) && lhs.containsAll(Keys)))
-                {
-                    //remove rhs from dr's attributes
-
-                }
-                //create the two relations r1 and r2 and push them into stack
-            }
-
-        }
+        
         return DecomposedRelations;
     }
 }
