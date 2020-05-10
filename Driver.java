@@ -137,16 +137,16 @@ public class Driver
         {
             System.out.println("Functional Dependency"+ fd.A+">"+fd.B);
         }
-        // ArrayList<Relation> DecomposedRelations = NormalFormConverter.toThirdNF(r1,minifiedFD);
-        // for(int i=0;i<DecomposedRelations.size();i++)
-        // {
-        //     System.out.println(DecomposedRelations.get(i).Attributes);
-        // }
+        
         ArrayList<Relation> DecomposedRelations = NormalFormConverter.toSecondNF(r1, FD);
+        ArrayList<FunctionalDependency> minifiedFD2 = MinimalCover.findMinimalCover(FD);
         for(int i=0;i<DecomposedRelations.size();i++)
         {
             System.out.println("Decomposed Relation :" + DecomposedRelations.get(i).Attributes);
-        }
+            ArrayList<String> pk = TableUtil.findPrimaryKeys(DecomposedRelations.get(i), minifiedFD2).get(0);
+            System.out.println("Primary Key : "+pk);
+            System.out.println();
+        }   
     }
     
     

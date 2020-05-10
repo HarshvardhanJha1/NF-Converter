@@ -54,7 +54,7 @@ public class TableUtil
                    break;
                }
            }
-           if(KClosure.size()==TableAttributes.size())
+           if(KClosure.containsAll(TableAttributes))
            {
                Keys.add(K);
            }

@@ -7,71 +7,63 @@ public class NormalFormConverter
     static ArrayList<Relation> toSecondNF(Relation r, ArrayList<FunctionalDependency> FD)
     {
         ArrayList<FunctionalDependency> minimumFD = MinimalCover.findMinimalCover(FD);
-        ArrayList<FunctionalDependency> minifiedFD = MinimalCover.findMinimalCover(FD);
+        //ArrayList<FunctionalDependency> minifiedFD = MinimalCover.findMinimalCover(FD);
         //Since it is minimumFD, everything on RHS will be atomic
         ArrayList<Relation> DecomposedRelations = new ArrayList<Relation>();
         while(minimumFD.size()!=0)
         {
+            System.out.println("Relation 1 : ");
             ArrayList<String> lhs = minimumFD.get(0).A;
+            System.out.println("LHS is : "+lhs);
+            ArrayList<String> dependents = minimumFD.get(0).B;
+            System.out.println("RHS initially is :"+dependents);
             Collections.sort(lhs);
-            if(r.PrimaryKeys.containsAll(lhs) && r.PrimaryKeys.size()!=lhs.size())
+            Collections.sort(dependents);
+            ArrayList<String> primaryKeys = r.PrimaryKeys;
+            Collections.sort(primaryKeys);
+            if(primaryKeys.containsAll(lhs))
             {
-                ArrayList<String> newTableAttributes = new ArrayList<String>();
-                for(String f : lhs){
-                    newTableAttributes.add(f);
-                }
-                for(int j=0;j<minimumFD.size();j++)
+                for(int i=0;i<minimumFD.size();i++)
                 {
-                    Collections.sort(minimumFD.get(j).A);
-                    if(minimumFD.get(j).A.equals(lhs) && !(r.PrimaryKeys.contains(minimumFD.get(j).B.get(0))) && !(newTableAttributes.contains(minimumFD.get(j).B.get(0))))
-                    {
-                        newTableAttributes.add(minimumFD.get(j).B.get(0));
-                        r.Attributes.remove(minimumFD.get(j).B.get(0));
+                    Collections.sort(minimumFD.get(i).A);
+                    if(lhs.equals(minimumFD.get(i).A) || dependents.containsAll(minimumFD.get(i).A)){
+                        ArrayList<String> rhs = minimumFD.get(i).B;
+                        for(String f : rhs)
+                        {
+                            if(!dependents.contains(f))
+                            {
+                                dependents.add(f);
+                            }
+                        }
                     }
                 }
-                Relation newRelation = new Relation();
-                newRelation.Attributes = newTableAttributes;
-                DecomposedRelations.add(newRelation);
-            }
-            for(int j=0;j<minimumFD.size();j++)
-            {
-                Collections.sort(minimumFD.get(j).A);
-                if(minimumFD.get(j).A.equals(lhs)){
-                    minimumFD.remove(j);
-                    j--;
-                }
-            }
-        }
-        // System.out.println("Random Table :"+r.Attributes);
-        for(int i=0;i<minifiedFD.size();i++)
-        {
-            ArrayList<String> concatenatedFD = new ArrayList<String>();
-            for(String f : minifiedFD.get(i).A)
-            {
-                concatenatedFD.add(f);
-            }
-            for(String f : minifiedFD.get(i).B)
-            {
-                concatenatedFD.add(f);
-            }
-            ArrayList<String> LHS = minifiedFD.get(i).A;
-            Collections.sort(LHS);
-            for(int j=0;j<minifiedFD.size();j++)
-            {
-                Collections.sort(minifiedFD.get(j).A);
-                if(LHS.equals(minifiedFD.get(j).A))
+                for(int i=0;i<minimumFD.size();i++)
                 {
-                    if(!(concatenatedFD.contains(minifiedFD.get(j).B.get(0)))){
-                        concatenatedFD.add(minifiedFD.get(j).B.get(0));
+                    
+                    if(lhs.equals(minimumFD.get(i).A) || dependents.containsAll(minimumFD.get(i).A)){
+                        minimumFD.remove(i);
+                        i--;
                     }
+
                 }
-            }
-            if(concatenatedFD.containsAll(r.Attributes)){
-                DecomposedRelations.add(r);
-                break;
+                System.out.println("LHS is : "+ lhs);
+                System.out.println("rhs is : "+dependents);
+                Relation r1 = new Relation();
+                ArrayList<String> newAttributes = new ArrayList<String>();
+                for(String f : lhs)
+                {
+
+                    newAttributes.add(f);
+                }
+                for(String f : dependents)
+                {
+                    newAttributes.add(f);
+                }
+                System.out.println("The new attr are : "+ newAttributes);
+                r1.Attributes = newAttributes;
+                DecomposedRelations.add(r1);
             }
         }
-        
         return DecomposedRelations;
     }
 
@@ -135,8 +127,26 @@ public class NormalFormConverter
     //Incomplete
     static ArrayList<Relation> toBCNF(Relation r, ArrayList<FunctionalDependency> FD)
     {
+        ArrayList<Relation> TempRelations = new ArrayList<Relation>();
         ArrayList<Relation> DecomposedRelations = new ArrayList<Relation>();
-        
+        // TempRelations.add(r);
+        // while(!TempRelations.isEmpty())
+        // {
+        //     if(TempRelations.get(0) is in BCNF)
+        //     {
+        //         DecomposedRelations.add(TempRelations.get(0));
+        //         TempRelations.remove(0);
+        //     }
+        //     else
+        //     {
+        //         //Run Algo to decompose into two relations r1, and r2
+        //         Relation r1 = something;
+        //         Relatin r2 = something;
+        //         TempRelations.remove(0);
+        //         TempRelations.add(r1);
+        //         TempRelations.add(r2);
+        //     }
+        // }
         return DecomposedRelations;
     }
 }
