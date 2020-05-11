@@ -21,6 +21,7 @@ public class NFChecker
             int count=0;
             for(int i=0;i<FD.size();i++)
             {
+                Collections.sort(FD.get(i).A);
                 for(ArrayList<String> sk : r.SuperKeyList){
                     Collections.sort(sk);
                     if(FD.get(i).A.equals(sk))

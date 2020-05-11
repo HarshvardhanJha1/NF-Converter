@@ -136,6 +136,7 @@ public class Driver
         }
         ArrayList<FunctionalDependency> minifiedFD = MinimalCover.findMinimalCover(FD);
         r1.SuperKeyList = TableUtil.returnSuperKeys(r1, minifiedFD);
+        r1.FD = minifiedFD;
         for(ArrayList<String> sk : r1.SuperKeyList)
         {
             System.out.println("Super Key "+ sk);
