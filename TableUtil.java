@@ -76,4 +76,63 @@ public class TableUtil
         }
        return CandidateKeys;
     }    
+
+    static ArrayList<ArrayList<String>> returnSuperKeys(Relation r1, ArrayList<FunctionalDependency> FD)
+    {
+        ArrayList<ArrayList<String>> superKeys = new ArrayList<ArrayList<String>>();
+
+       ArrayList<String> TableAttributes = r1.Attributes;
+       int attrCount = TableAttributes.size();
+       for(int l=0;l<(1<<attrCount);l++)
+       {    
+           ArrayList<String> K = new ArrayList<String>();
+           for(int m=0;m<attrCount;m++){
+               if((l & (1<<m))!=0)
+               {
+                   K.add(TableAttributes.get(m));
+               }
+           }
+           Collections.sort(K);
+           //Finding closure.
+           ArrayList<String> KClosure = new ArrayList<String>();
+           for(String a:K)
+           {
+               KClosure.add(a);
+           }
+   
+           while(true)
+           {
+               ArrayList<String> OldKClosure = new ArrayList<String>();
+               for(String f : KClosure)
+               {
+                   OldKClosure.add(f);
+               } 
+               for(int i=0;i<FD.size();i++)
+               {
+                   FunctionalDependency fd = FD.get(i);
+                   if(KClosure.containsAll(fd.A))
+                   {
+                       for(int j=0;j<fd.B.size();j++)
+                       {
+                           if(!KClosure.contains(fd.B.get(j))){
+                               KClosure.add(fd.B.get(j));
+                           }
+                       }
+                       Collections.sort(KClosure);
+                   }
+               }
+               Collections.sort(KClosure);
+               Collections.sort(OldKClosure);
+               if(KClosure.equals(OldKClosure))
+               {
+                   break;
+               }
+           }
+           if(KClosure.containsAll(TableAttributes))
+           {
+               superKeys.add(K);
+           }
+       }
+       return superKeys;
+    }
 }

@@ -42,6 +42,8 @@ public class FindClosure
         return Closure;
     }
 
+    
+
     static boolean checkEquivalence(ArrayList<FunctionalDependency> FD1, ArrayList<FunctionalDependency> FD2)
     {
         for(int i=0;i<FD1.size();i++)

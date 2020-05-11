@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class NFChecker 
 {
@@ -20,8 +21,9 @@ public class NFChecker
             int count=0;
             for(int i=0;i<FD.size();i++)
             {
-                for(ArrayList<String> ck : r.CandidateKeyList){
-                    if(FD.get(i).A.containsAll(ck))
+                for(ArrayList<String> sk : r.SuperKeyList){
+                    Collections.sort(sk);
+                    if(FD.get(i).A.equals(sk))
                     {
                         count++;
                         break;

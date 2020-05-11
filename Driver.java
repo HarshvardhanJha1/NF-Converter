@@ -134,11 +134,17 @@ public class Driver
         for(ArrayList<String> ck : CandidateKeys){
             r1.CandidateKeyList.add(ck);
         }
+        ArrayList<FunctionalDependency> minifiedFD = MinimalCover.findMinimalCover(FD);
+        r1.SuperKeyList = TableUtil.returnSuperKeys(r1, minifiedFD);
+        for(ArrayList<String> sk : r1.SuperKeyList)
+        {
+            System.out.println("Super Key "+ sk);
+        }
         // // ArrayList<ArrayList<String>> key = TableUtil.findPrimaryKeys(r1, FD);
         // // System.out.println("Table Util :"+key);
         // //Finding Minimal Cover
         
-        ArrayList<FunctionalDependency> minifiedFD = MinimalCover.findMinimalCover(FD);
+        
         // for(FunctionalDependency fd : minifiedFD)
         // {
         //     System.out.println("Functional Dependency"+ fd.A+">"+fd.B);
