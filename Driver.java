@@ -159,7 +159,14 @@ public class Driver
         //     System.out.println();
         // }  
         
-        //System.out.println("BCNF :"+NFChecker.isBCNF(r1, minifiedFD));
+        System.out.println("BCNF :"+NFChecker.isBCNF(r1, minifiedFD));
+        ArrayList<Relation> DecomposedTables = NormalFormConverter.toBCNF(r1, r1.FD);
+        for(Relation r : DecomposedTables)
+        {
+            System.out.println("Decomposed Relation :"+r.Attributes);
+            System.out.println("Candidate Key : "+r.CandidateKeyList);
+            System.out.println(" ");
+        }
     }
     
     

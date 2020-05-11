@@ -140,6 +140,9 @@ public class NormalFormConverter
             }
             dr.Attributes = TableAttributes;
             dr.PrimaryKeys = X;
+            dr.FD = TableUtil.findFunctionalDependencies(dr, minimumFD);
+            dr.CandidateKeyList = TableUtil.findCandidateKeys(dr, dr.FD);
+            dr.SuperKeyList = TableUtil.returnSuperKeys(dr, dr.FD);
             DecomposedRelations.add(dr);
             for(int j=0;j<minimumFD.size();j++){
                 if(minimumFD.get(j).A.equals(X)){
@@ -186,11 +189,15 @@ public class NormalFormConverter
     //Incomplete
     static ArrayList<Relation> toBCNF(Relation r, ArrayList<FunctionalDependency> FD)
     {
+        
+        
         ArrayList<Relation> TempRelations = new ArrayList<Relation>();
         ArrayList<Relation> DecomposedRelations = new ArrayList<Relation>();
         TempRelations.add(r);
-        while(!TempRelations.isEmpty())
+
+        while(TempRelations.size()!=0)
         {
+            //System.out.println("Entered");
              Relation t = TempRelations.get(0);
              ArrayList<FunctionalDependency> tFD = t.FD;
              if(NFChecker.isBCNF(t, t.FD))
@@ -200,29 +207,84 @@ public class NormalFormConverter
              }
              else
              {
-
+                ArrayList<String> oldTableAttributes = t.Attributes;
                 Relation t1 = new Relation();
                 Relation t2 = new Relation();
                 for(int i=0;i<tFD.size();i++)
                 {
                     FunctionalDependency fd = tFD.get(i);
+                    boolean createTable = true;
                     Collections.sort(fd.A);
                     for(ArrayList<String> sk : t.SuperKeyList){
                         Collections.sort(sk);
                         if(sk.equals(fd.A)){
+                            createTable=false;
                             break;
                         }
                     }
+                    if(createTable){
+                        ArrayList<String> rhs = fd.B;
+                        ArrayList<String> lhs = fd.A;
+                        ArrayList<String> newTableAttributes1 = new ArrayList<String>();
+                        for(String f : lhs){
+                            if(!newTableAttributes1.contains(f)){newTableAttributes1.add(f);}
+                        }
+                        for(String f : rhs){
+                            if(!newTableAttributes1.contains(f)){
+                                newTableAttributes1.add(f);
+                                oldTableAttributes.remove(f);
+                            }
+                        }
+                        t1.Attributes = newTableAttributes1;
+                        t1.FD = TableUtil.findFunctionalDependencies(t1, tFD);
+                        t1.CandidateKeyList = TableUtil.findCandidateKeys(t1, t1.FD);
+                        t1.SuperKeyList = TableUtil.returnSuperKeys(t1, t1.FD);
+                        t2.Attributes = oldTableAttributes;
+                        t2.FD = TableUtil.findFunctionalDependencies(t2,tFD);
+                        t2.CandidateKeyList = TableUtil.findCandidateKeys(t2, t2.FD);
+                        t2.SuperKeyList = TableUtil.returnSuperKeys(t2, t2.FD);
+                        TempRelations.add(t1);
+                        TempRelations.add(t2);
+                        TempRelations.remove(t);
+                    }
                 }
                 
-        //         //Run Algo to decompose into two relations r1, and r2
-        //         Relation r1 = something;
-        //         Relatin r2 = something;
-        //         TempRelations.remove(0);
-        //         TempRelations.add(r1);
-        //         TempRelations.add(r2);
              }
          }
+        ArrayList<Relation> CKRelations = new ArrayList<Relation>();
+        for(ArrayList<String> ck : r.CandidateKeyList)
+        {
+            Relation r1 = new Relation();
+            r1.Attributes = ck;
+            r1.FD = TableUtil.findFunctionalDependencies(r1, FD);
+            r1.CandidateKeyList = TableUtil.findCandidateKeys(r1, r1.FD);
+            r1.SuperKeyList = TableUtil.returnSuperKeys(r1, r1.FD);
+            CKRelations.add(r1);
+        }
+
+        for(Relation ckr : CKRelations)
+        {
+            DecomposedRelations.add(ckr);
+        }
+        
+        for(int i=0;i<DecomposedRelations.size();i++){
+            Relation dr1 = DecomposedRelations.get(i);
+            Collections.sort(dr1.Attributes);
+            for(int j=0;j<DecomposedRelations.size();j++){
+                if(i!=j)
+                {
+                    Relation dr2 = DecomposedRelations.get(j);
+                    Collections.sort(dr2.Attributes);
+                    if(dr1.Attributes.containsAll(dr2.Attributes)){
+                        DecomposedRelations.remove(j);
+                        j--;
+                    }
+                }
+            }
+        }
+
+         //add Relations present in CKrelations, and remove those that are a subset of relations already present
+
         return DecomposedRelations;
     }
 }
