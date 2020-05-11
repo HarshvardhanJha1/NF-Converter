@@ -130,13 +130,9 @@ public class Driver
         Relation r1 = new Relation();
         r1.PrimaryKeys = PrimaryKey;
         r1.Attributes = TableAttributes;
-        r1.CandidateKeyList = new ArrayList<String>();
+        r1.CandidateKeyList = new ArrayList<ArrayList<String>>();
         for(ArrayList<String> ck : CandidateKeys){
-            for(String f : ck){
-                if(!r1.CandidateKeyList.contains(f)){
-                    r1.CandidateKeyList.add(f);
-                }
-            }
+            r1.CandidateKeyList.add(ck);
         }
         // // ArrayList<ArrayList<String>> key = TableUtil.findPrimaryKeys(r1, FD);
         // // System.out.println("Table Util :"+key);

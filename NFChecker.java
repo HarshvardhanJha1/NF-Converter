@@ -17,13 +17,20 @@ public class NFChecker
         if(!(is2NF(r, FD) && is3NF(r, FD))){return false;}
         else
         {
+            int count=0;
             for(int i=0;i<FD.size();i++)
             {
-                if(!r.CandidateKeyList.containsAll(FD.get(i).A)){
-                    return false;
+                for(ArrayList<String> ck : r.CandidateKeyList){
+                    if(FD.get(i).A.containsAll(ck))
+                    {
+                        count++;
+                        break;
+                    }
                 }
+                
             }
+            if(count==FD.size()){return true;}
         }
-        return true;
+        return false;
     }    
 }
