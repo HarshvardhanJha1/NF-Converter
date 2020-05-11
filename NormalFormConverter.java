@@ -188,24 +188,41 @@ public class NormalFormConverter
     {
         ArrayList<Relation> TempRelations = new ArrayList<Relation>();
         ArrayList<Relation> DecomposedRelations = new ArrayList<Relation>();
-        // TempRelations.add(r);
-        // while(!TempRelations.isEmpty())
-        // {
-        //     if(TempRelations.get(0) is in BCNF)
-        //     {
-        //         DecomposedRelations.add(TempRelations.get(0));
-        //         TempRelations.remove(0);
-        //     }
-        //     else
-        //     {
+        TempRelations.add(r);
+        while(!TempRelations.isEmpty())
+        {
+             Relation t = TempRelations.get(0);
+             ArrayList<FunctionalDependency> tFD = t.FD;
+             if(NFChecker.isBCNF(t, t.FD))
+             {
+                DecomposedRelations.add(TempRelations.get(0));
+                TempRelations.remove(0);
+             }
+             else
+             {
+
+                Relation t1 = new Relation();
+                Relation t2 = new Relation();
+                for(int i=0;i<tFD.size();i++)
+                {
+                    FunctionalDependency fd = tFD.get(i);
+                    Collections.sort(fd.A);
+                    for(ArrayList<String> sk : t.SuperKeyList){
+                        Collections.sort(sk);
+                        if(sk.equals(fd.A)){
+                            break;
+                        }
+                    }
+                }
+                
         //         //Run Algo to decompose into two relations r1, and r2
         //         Relation r1 = something;
         //         Relatin r2 = something;
         //         TempRelations.remove(0);
         //         TempRelations.add(r1);
         //         TempRelations.add(r2);
-        //     }
-        // }
+             }
+         }
         return DecomposedRelations;
     }
 }

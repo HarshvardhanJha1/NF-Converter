@@ -3,7 +3,7 @@ import java.util.Collections;
 
 public class TableUtil 
 {
-    static ArrayList<ArrayList<String>> findPrimaryKeys(Relation r1, ArrayList<FunctionalDependency> FD)
+    static ArrayList<ArrayList<String>> findCandidateKeys(Relation r1, ArrayList<FunctionalDependency> FD)
     {
      
        ArrayList<ArrayList<String>> Keys = new ArrayList<ArrayList<String>>();
@@ -134,5 +134,28 @@ public class TableUtil
            }
        }
        return superKeys;
+    }
+
+    static ArrayList<FunctionalDependency>  findFunctionalDependencies(Relation r, ArrayList<FunctionalDependency> FD)
+    {
+        ArrayList<FunctionalDependency> relevantFD = new ArrayList<FunctionalDependency>();
+        
+        for(int i=0;i<FD.size();i++)
+        {
+            ArrayList<String> LHS = FD.get(i).A;
+            ArrayList<String> RHS = FD.get(i).B;
+            ArrayList<String> concat = new ArrayList<String>();
+            for(String f : LHS){
+                if(!concat.contains(f)){concat.add(f);}
+            }
+            for(String f : RHS){
+                if(!concat.contains(f)){concat.add(f);}
+            }
+            if(r.Attributes.containsAll(concat)){
+                relevantFD.add(FD.get(i));
+            }
+        }
+
+        return relevantFD;
     }
 }

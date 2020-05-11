@@ -126,20 +126,18 @@ public class Driver
             System.out.println(ck);
         }
 
-        
+        ArrayList<FunctionalDependency> minifiedFD = MinimalCover.findMinimalCover(FD);
         Relation r1 = new Relation();
         r1.PrimaryKeys = PrimaryKey;
         r1.Attributes = TableAttributes;
-        r1.CandidateKeyList = new ArrayList<ArrayList<String>>();
-        for(ArrayList<String> ck : CandidateKeys){
-            r1.CandidateKeyList.add(ck);
-        }
-        ArrayList<FunctionalDependency> minifiedFD = MinimalCover.findMinimalCover(FD);
         r1.SuperKeyList = TableUtil.returnSuperKeys(r1, minifiedFD);
         r1.FD = minifiedFD;
-        for(ArrayList<String> sk : r1.SuperKeyList)
+        r1.CandidateKeyList = TableUtil.findCandidateKeys(r1, minifiedFD);
+        
+
+        for(ArrayList<String> ck : r1.CandidateKeyList)
         {
-            System.out.println("Super Key "+ sk);
+            System.out.println("Candidate Key "+ ck);
         }
         // // ArrayList<ArrayList<String>> key = TableUtil.findPrimaryKeys(r1, FD);
         // // System.out.println("Table Util :"+key);
@@ -161,7 +159,7 @@ public class Driver
         //     System.out.println();
         // }  
         
-        System.out.println("BCNF :"+NFChecker.isBCNF(r1, minifiedFD));
+        //System.out.println("BCNF :"+NFChecker.isBCNF(r1, minifiedFD));
     }
     
     
