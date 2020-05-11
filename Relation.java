@@ -3,5 +3,7 @@ import java.util.ArrayList;
 public class Relation 
 {
     ArrayList<String> PrimaryKeys;
-    ArrayList<String> Attributes;    
+    ArrayList<String> Attributes;  
+    ArrayList<FunctionalDependency> FD;
+    ArrayList<String> CandidateKeyList;  
 }

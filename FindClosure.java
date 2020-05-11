@@ -3,7 +3,44 @@ import java.util.Collections;
 
 public class FindClosure 
 {
-    
+    static ArrayList<String> findClosure(ArrayList<String> attributeList ,ArrayList<FunctionalDependency> FD)
+    {
+        ArrayList<String> Closure = new ArrayList<String>();
+        for(String f : attributeList)
+        {
+            Closure.add(f);
+        }
+        while(true)
+           {
+               ArrayList<String> OldClosure = new ArrayList<String>();
+               for(String f : Closure)
+               {
+                   OldClosure.add(f);
+               } 
+               for(int i=0;i<FD.size();i++)
+               {
+                   FunctionalDependency fd = FD.get(i);
+                   if(Closure.containsAll(fd.A))
+                   {
+                       for(int j=0;j<fd.B.size();j++)
+                       {
+                           if(!Closure.contains(fd.B.get(j))){
+                               Closure.add(fd.B.get(j));
+                           }
+                       }
+                       Collections.sort(Closure);
+                   }
+               }
+               Collections.sort(Closure);
+               Collections.sort(OldClosure);
+               if(Closure.equals(OldClosure))
+               {
+                   break;
+               }
+           }
+
+        return Closure;
+    }
 
     static boolean checkEquivalence(ArrayList<FunctionalDependency> FD1, ArrayList<FunctionalDependency> FD2)
     {

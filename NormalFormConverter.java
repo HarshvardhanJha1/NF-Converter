@@ -6,64 +6,106 @@ public class NormalFormConverter
     //Incomplete
     static ArrayList<Relation> toSecondNF(Relation r, ArrayList<FunctionalDependency> FD)
     {
-        ArrayList<FunctionalDependency> minimumFD = MinimalCover.findMinimalCover(FD);
-        //ArrayList<FunctionalDependency> minifiedFD = MinimalCover.findMinimalCover(FD);
-        //Since it is minimumFD, everything on RHS will be atomic
         ArrayList<Relation> DecomposedRelations = new ArrayList<Relation>();
-        while(minimumFD.size()!=0)
+        ArrayList<String> primaryKey = r.PrimaryKeys;
+        ArrayList<FunctionalDependency> minimumFD = MinimalCover.findMinimalCover(FD);
+        ArrayList<FunctionalDependency> partialDependencies = new ArrayList<FunctionalDependency>();
+        ArrayList<FunctionalDependency> fullDependencies = new ArrayList<FunctionalDependency>();
+        for(FunctionalDependency fd : minimumFD)
         {
-            System.out.println("Relation 1 : ");
-            ArrayList<String> lhs = minimumFD.get(0).A;
-            System.out.println("LHS is : "+lhs);
-            ArrayList<String> dependents = minimumFD.get(0).B;
-            System.out.println("RHS initially is :"+dependents);
-            Collections.sort(lhs);
-            Collections.sort(dependents);
-            ArrayList<String> primaryKeys = r.PrimaryKeys;
-            Collections.sort(primaryKeys);
-            if(primaryKeys.containsAll(lhs))
+            fullDependencies.add(fd);
+        }
+
+        for(int i=0;i<fullDependencies.size();i++)
+        {
+            FunctionalDependency fd = fullDependencies.get(i);
+            ArrayList<String> lhs = fd.A;
+            ArrayList<String> rhs = fd.B;
+            if(primaryKey.containsAll(lhs) && lhs.size()!=primaryKey.size() && !primaryKey.containsAll(rhs))
             {
-                for(int i=0;i<minimumFD.size();i++)
+                partialDependencies.add(fd);
+                fullDependencies.remove(i);
+                i--;
+            }
+            //compute closure of RHS and add those to partial dependencies, and remove from fulldependencies
+            ArrayList<String> rhsClosure = FindClosure.findClosure(rhs, minimumFD);
+            for(int j=0;j<fullDependencies.size();j++)
+            {
+                FunctionalDependency fd2 = fullDependencies.get(j);
+                if(rhsClosure.containsAll(fd2.A))
                 {
-                    Collections.sort(minimumFD.get(i).A);
-                    if(lhs.equals(minimumFD.get(i).A) || dependents.containsAll(minimumFD.get(i).A)){
-                        ArrayList<String> rhs = minimumFD.get(i).B;
-                        for(String f : rhs)
-                        {
-                            if(!dependents.contains(f))
-                            {
-                                dependents.add(f);
-                            }
-                        }
-                    }
+                    partialDependencies.add(fd2);
+                    fullDependencies.remove(j);
+                    j--;
                 }
-                for(int i=0;i<minimumFD.size();i++)
-                {
-                    
-                    if(lhs.equals(minimumFD.get(i).A) || dependents.containsAll(minimumFD.get(i).A)){
-                        minimumFD.remove(i);
-                        i--;
-                    }
+            }
 
+        }
+        ArrayList<String> xf = new ArrayList<String>();
+        for(int i=0;i<fullDependencies.size();i++)
+        {
+            ArrayList<String> lhs = fullDependencies.get(i).A;
+            ArrayList<String> rhs = fullDependencies.get(i).B;
+            for(String f : lhs){
+                if(!xf.contains(f)){
+                    xf.add(f);
                 }
-                System.out.println("LHS is : "+ lhs);
-                System.out.println("rhs is : "+dependents);
-                Relation r1 = new Relation();
-                ArrayList<String> newAttributes = new ArrayList<String>();
-                for(String f : lhs)
-                {
-
-                    newAttributes.add(f);
+            }
+            for(String f : rhs){
+                if(!xf.contains(f)){
+                    xf.add(f);
                 }
-                for(String f : dependents)
-                {
-                    newAttributes.add(f);
-                }
-                System.out.println("The new attr are : "+ newAttributes);
-                r1.Attributes = newAttributes;
-                DecomposedRelations.add(r1);
             }
         }
+
+        for(FunctionalDependency pd : partialDependencies)
+        {
+            System.out.println("Partial Dependency :"+pd.A+">"+pd.B);
+        }
+
+        for(int i=0;i<partialDependencies.size();i++)
+        {
+            FunctionalDependency fd = partialDependencies.get(i);
+            
+            Collections.sort(fd.A);
+            if(r.PrimaryKeys.containsAll(fd.A) && fd.A.size()!=r.PrimaryKeys.size())
+            {
+                Relation t = new Relation();
+                ArrayList<String> attributes = new ArrayList<String>();
+                attributes.add(fd.B.get(0));
+                for(int j=i+1;j<partialDependencies.size();j++){
+                    if(partialDependencies.get(j).A.equals(fd.A) || attributes.containsAll(partialDependencies.get(j).A)){
+                        if(!attributes.contains(partialDependencies.get(j).B.get(0)))
+                        {
+                            attributes.add(partialDependencies.get(j).B.get(0));
+                        }
+                        partialDependencies.remove(j);
+                        j--;
+                    }
+                }
+                System.out.println("Closure of"+fd.A+" is "+ attributes);
+                t.Attributes = attributes;
+                t.PrimaryKeys = fd.A;
+                Collections.sort(t.Attributes);
+                for(String f : attributes)
+                {
+                    if(xf.contains(f)){
+                        xf.remove(f);
+                    }
+                }
+                for(String f : t.PrimaryKeys){
+                    t.Attributes.add(f);
+                }
+                DecomposedRelations.add(t);
+            }
+        }
+        Relation r2 = new Relation();
+        r2.Attributes = xf;
+        if(xf.size()!=0){
+            DecomposedRelations.add(r2);
+        }
+        
+        
         return DecomposedRelations;
     }
 
@@ -122,6 +164,23 @@ public class NormalFormConverter
                 }
             }
         }
+
+        boolean subsumed = false;
+        for(int i=0;i<DecomposedRelations.size();i++)
+        {
+            if(DecomposedRelations.get(i).Attributes.containsAll(r.PrimaryKeys))
+            {
+                subsumed = true;
+                break;
+            }
+        }
+        if(subsumed==false)
+        {
+            Relation r1 = new Relation();
+            r1.Attributes = r.PrimaryKeys;
+            DecomposedRelations.add(r1);
+        }
+
         return DecomposedRelations;
     }
     //Incomplete

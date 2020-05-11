@@ -120,33 +120,45 @@ public class Driver
         }
         ArrayList<String> PrimaryKey = new ArrayList<String>();
         PrimaryKey = CandidateKeys.get(0);
+
         for(ArrayList<String> ck : CandidateKeys)
         {
             System.out.println(ck);
         }
+
+        
         Relation r1 = new Relation();
         r1.PrimaryKeys = PrimaryKey;
         r1.Attributes = TableAttributes;
-        
-        // ArrayList<ArrayList<String>> key = TableUtil.findPrimaryKeys(r1, FD);
-        // System.out.println("Table Util :"+key);
-        //Finding Minimal Cover
+        r1.CandidateKeyList = new ArrayList<String>();
+        for(ArrayList<String> ck : CandidateKeys){
+            for(String f : ck){
+                if(!r1.CandidateKeyList.contains(f)){
+                    r1.CandidateKeyList.add(f);
+                }
+            }
+        }
+        // // ArrayList<ArrayList<String>> key = TableUtil.findPrimaryKeys(r1, FD);
+        // // System.out.println("Table Util :"+key);
+        // //Finding Minimal Cover
         
         ArrayList<FunctionalDependency> minifiedFD = MinimalCover.findMinimalCover(FD);
-        for(FunctionalDependency fd : minifiedFD)
-        {
-            System.out.println("Functional Dependency"+ fd.A+">"+fd.B);
-        }
+        // for(FunctionalDependency fd : minifiedFD)
+        // {
+        //     System.out.println("Functional Dependency"+ fd.A+">"+fd.B);
+        // }
         
-        ArrayList<Relation> DecomposedRelations = NormalFormConverter.toSecondNF(r1, FD);
-        ArrayList<FunctionalDependency> minifiedFD2 = MinimalCover.findMinimalCover(FD);
-        for(int i=0;i<DecomposedRelations.size();i++)
-        {
-            System.out.println("Decomposed Relation :" + DecomposedRelations.get(i).Attributes);
-            ArrayList<String> pk = TableUtil.findPrimaryKeys(DecomposedRelations.get(i), minifiedFD2).get(0);
-            System.out.println("Primary Key : "+pk);
-            System.out.println();
-        }   
+        // ArrayList<Relation> DecomposedRelations = NormalFormConverter.toSecondNF(r1, FD);
+        // ArrayList<FunctionalDependency> minifiedFD2 = MinimalCover.findMinimalCover(FD);
+        // for(int i=0;i<DecomposedRelations.size();i++)
+        // {
+        //     System.out.println("Decomposed Relation :" + DecomposedRelations.get(i).Attributes);
+        //     ArrayList<String> pk = TableUtil.findPrimaryKeys(DecomposedRelations.get(i), minifiedFD2).get(0);
+        //     System.out.println("Primary Key : "+pk);
+        //     System.out.println();
+        // }  
+        
+        System.out.println("BCNF :"+NFChecker.isBCNF(r1, minifiedFD));
     }
     
     
