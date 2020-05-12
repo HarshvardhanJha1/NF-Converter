@@ -124,6 +124,7 @@ public class NormalFormConverter
 
     static ArrayList<Relation> toThirdNF(Relation r, ArrayList<FunctionalDependency> FD)
     {
+        ArrayList<String> leftoverAttributes = r.Attributes;
         ArrayList<FunctionalDependency> minimumFD = MinimalCover.findMinimalCover(FD);
         ArrayList<FunctionalDependency> dummyFD = new ArrayList<FunctionalDependency>();
         for(FunctionalDependency fde : minimumFD){
@@ -135,6 +136,7 @@ public class NormalFormConverter
         {
             Relation dr = new Relation();
             ArrayList<String> X = minimumFD.get(i).A;
+            //System.out.println("Making table with :"+X);
             Collections.sort(X);
             ArrayList<String> TableAttributes = new ArrayList<String>();
             for(String f : X){
@@ -152,23 +154,37 @@ public class NormalFormConverter
                     }
                 }
             }
+            for(String f : TableAttributes){
+                leftoverAttributes.remove(f);
+            }
             dr.Attributes = TableAttributes;
             dr.PrimaryKeys = X;
-            dr.FD = TableUtil.findFunctionalDependencies(dr, minimumFD);
+            dr.FD = TableUtil.findFunctionalDependencies(dr, dummyFD);
             dr.CandidateKeyList = TableUtil.findCandidateKeys(dr, dr.FD);
             dr.SuperKeyList = TableUtil.returnSuperKeys(dr, dr.FD);
             DecomposedRelations.add(dr);
-            for(int j=0;j<minimumFD.size();j++){
-                if(minimumFD.get(j).A.equals(X)){
-                    minimumFD.remove(j);
-                    j--;
-                }
-            }
+            // for(int j=0;j<minimumFD.size();j++){
+            //     if(minimumFD.get(j).A.equals(X)){
+            //         minimumFD.remove(j);
+            //         j--;
+            //     }
+            // }
         }
+        if(leftoverAttributes.size()!=0)
+        {
+            Relation leftoverRel = new Relation();
+            leftoverRel.Attributes = leftoverAttributes;
+            leftoverRel.FD = TableUtil.findFunctionalDependencies(leftoverRel, dummyFD);
+            leftoverRel.SuperKeyList = TableUtil.returnSuperKeys(leftoverRel, leftoverRel.FD);
+            leftoverRel.CandidateKeyList = TableUtil.findCandidateKeys(leftoverRel, leftoverRel.FD);
+            DecomposedRelations.add(leftoverRel);
+        }
+        
+
 
         for(ArrayList<String> ck : r.CandidateKeyList)
         {
-            System.out.println("Testing "+ck);
+            //System.out.println("Testing "+ck);
             Relation dr = new Relation();
             dr.Attributes = ck;
             dr.FD = TableUtil.findFunctionalDependencies(dr, dummyFD);
@@ -181,15 +197,15 @@ public class NormalFormConverter
         for(int i=0;i<DecomposedRelations.size();i++){
             Relation dr1 = DecomposedRelations.get(i);
             Collections.sort(dr1.Attributes);
-            for(int j=0;j<DecomposedRelations.size();j++){
-                if(i!=j){
-                    Relation dr2 = DecomposedRelations.get(j);
-                    Collections.sort(dr2.Attributes);
-                    if(dr1.Attributes.containsAll(dr2.Attributes) && dr1.Attributes.size()!=dr2.Attributes.size()){
-                        DecomposedRelations.remove(j);
-                        j--;
-                    }
+            for(int j=i+1;j<DecomposedRelations.size();j++){
+                
+                Relation dr2 = DecomposedRelations.get(j);
+                Collections.sort(dr2.Attributes);
+                if(dr1.Attributes.containsAll(dr2.Attributes) && dr1.Attributes.size()!=dr2.Attributes.size()){
+                    DecomposedRelations.remove(j);
+                    j--;
                 }
+                
             }
         }
 
@@ -198,16 +214,15 @@ public class NormalFormConverter
         {
             Relation dr1 = DecomposedRelations.get(i);
             Collections.sort(dr1.Attributes);
-            for(int j=0;j<DecomposedRelations.size();j++){
-                if(i!=j)
-                {
-                    Relation dr2 = DecomposedRelations.get(j);
-                    Collections.sort(dr2.Attributes);
-                    if(dr1.Attributes.equals(dr2.Attributes)){
-                        DecomposedRelations.remove(j);
-                        j--;
-                    }
+            for(int j=i+1;j<DecomposedRelations.size();j++){
+                
+                Relation dr2 = DecomposedRelations.get(j);
+                Collections.sort(dr2.Attributes);
+                if(dr1.Attributes.equals(dr2.Attributes)){
+                    DecomposedRelations.remove(j);
+                    j--;
                 }
+                
             }
         }
         return DecomposedRelations;

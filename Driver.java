@@ -144,10 +144,7 @@ public class Driver
         // //Finding Minimal Cover
         
         
-        // for(FunctionalDependency fd : minifiedFD)
-        // {
-        //     System.out.println("Functional Dependency"+ fd.A+">"+fd.B);
-        // }
+        
         
         // ArrayList<Relation> DecomposedRelations = NormalFormConverter.toSecondNF(r1, FD);
         // ArrayList<FunctionalDependency> minifiedFD2 = MinimalCover.findMinimalCover(FD);
@@ -163,7 +160,7 @@ public class Driver
         System.out.println("BCNF :"+NFChecker.isBCNF(r1, minifiedFD));
         
         System.out.println("------------------");
-        ArrayList<Relation> DecomposedTables = NormalFormConverter.toBCNF(r1, r1.FD);
+        ArrayList<Relation> DecomposedTables = NormalFormConverter.toThirdNF(r1, r1.FD);
         for(Relation r : DecomposedTables)
         {
             System.out.println("Decomposed Relation :"+r.Attributes);
