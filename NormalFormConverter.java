@@ -82,7 +82,7 @@ public class NormalFormConverter
         DecomposedRelation.add(oldRel);
         for(ArrayList<String> ck : r.CandidateKeyList)
         {
-            System.out.println("Testing "+ck);
+            // System.out.println("Testing "+ck);
             Relation dr = new Relation();
             dr.Attributes = ck;
             dr.FD = TableUtil.findFunctionalDependencies(dr, dummyFD);

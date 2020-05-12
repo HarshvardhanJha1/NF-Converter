@@ -160,7 +160,7 @@ public class Driver
         System.out.println("BCNF :"+NFChecker.isBCNF(r1, minifiedFD));
         
         System.out.println("------------------");
-        ArrayList<Relation> DecomposedTables = NormalFormConverter.toThirdNF(r1, r1.FD);
+        ArrayList<Relation> DecomposedTables = NormalFormConverter.toSecondNF(r1, r1.FD);
         for(Relation r : DecomposedTables)
         {
             System.out.println("Decomposed Relation :"+r.Attributes);
