@@ -76,5 +76,16 @@ public class NFChecker
             if(count==FD.size()){return true;}
         }
         return false;
-    }    
+    }
+    static double getNF(Relation r, ArrayList<FunctionalDependency> FD)
+    {
+        double flag=1;
+        if(is2NF(r, FD))
+            flag=2;
+        if(is3NF(r, FD))
+            flag=3;
+        if(isBCNF(r, FD))
+            flag=3.5;
+        return flag;
+    }   
 }
