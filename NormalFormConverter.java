@@ -125,11 +125,12 @@ public class NormalFormConverter
     static ArrayList<Relation> toThirdNF(Relation r, ArrayList<FunctionalDependency> FD)
     {
         ArrayList<FunctionalDependency> minimumFD = MinimalCover.findMinimalCover(FD);
+        ArrayList<FunctionalDependency> dummyFD = new ArrayList<FunctionalDependency>();
+        for(FunctionalDependency fde : minimumFD){
+            dummyFD.add(fde);
+        }
         ArrayList<Relation> DecomposedRelations = new ArrayList<Relation>();
-        Relation br =  new Relation();
-        br.Attributes = r.PrimaryKeys;
-        br.PrimaryKeys = r.PrimaryKeys;
-        //DecomposedRelations.add(br);
+        
         for(int i=0;i<minimumFD.size();i++)
         {
             Relation dr = new Relation();
@@ -165,15 +166,26 @@ public class NormalFormConverter
             }
         }
 
+        for(ArrayList<String> ck : r.CandidateKeyList)
+        {
+            System.out.println("Testing "+ck);
+            Relation dr = new Relation();
+            dr.Attributes = ck;
+            dr.FD = TableUtil.findFunctionalDependencies(dr, dummyFD);
+            dr.CandidateKeyList = TableUtil.findCandidateKeys(dr, dr.FD);
+            dr.SuperKeyList = TableUtil.returnSuperKeys(dr, dr.FD);
+            DecomposedRelations.add(dr);
+        }
+
+        //TO REMOVE REDUNDANT TABLES
         for(int i=0;i<DecomposedRelations.size();i++){
             Relation dr1 = DecomposedRelations.get(i);
             Collections.sort(dr1.Attributes);
             for(int j=0;j<DecomposedRelations.size();j++){
-                if(i!=j)
-                {
+                if(i!=j){
                     Relation dr2 = DecomposedRelations.get(j);
                     Collections.sort(dr2.Attributes);
-                    if(dr1.Attributes.containsAll(dr2.Attributes)){
+                    if(dr1.Attributes.containsAll(dr2.Attributes) && dr1.Attributes.size()!=dr2.Attributes.size()){
                         DecomposedRelations.remove(j);
                         j--;
                     }
@@ -181,23 +193,26 @@ public class NormalFormConverter
             }
         }
 
-        boolean subsumed = false;
+        //to remove duplicates
         for(int i=0;i<DecomposedRelations.size();i++)
         {
-            if(DecomposedRelations.get(i).Attributes.containsAll(r.PrimaryKeys))
-            {
-                subsumed = true;
-                break;
+            Relation dr1 = DecomposedRelations.get(i);
+            Collections.sort(dr1.Attributes);
+            for(int j=0;j<DecomposedRelations.size();j++){
+                if(i!=j)
+                {
+                    Relation dr2 = DecomposedRelations.get(j);
+                    Collections.sort(dr2.Attributes);
+                    if(dr1.Attributes.equals(dr2.Attributes)){
+                        DecomposedRelations.remove(j);
+                        j--;
+                    }
+                }
             }
         }
-        if(subsumed==false)
-        {
-            Relation r1 = new Relation();
-            r1.Attributes = r.PrimaryKeys;
-            DecomposedRelations.add(r1);
-        }
-
         return DecomposedRelations;
+
+
     }
     //Incomplete
     static ArrayList<Relation> toBCNF(Relation r, ArrayList<FunctionalDependency> FD)

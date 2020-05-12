@@ -79,7 +79,7 @@ public class MinimalCover
                 
                 FunctionalDependency removeFD = new FunctionalDependency(minifiedFD1.get(j).A,minifiedFD1.get(j).B);
                 minifiedFD1.remove(j); j--;
-                System.out.println("Need to remove : "+ removeFD.A+">"+removeFD.B);
+                
                 for(int l=0;l<minifiedFD.size();l++){
                     if(removeFD.equals(minifiedFD.get(l))){
                         minifiedFD.remove(l);
