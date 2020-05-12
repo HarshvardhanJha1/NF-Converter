@@ -59,21 +59,30 @@ public class TableUtil
                Keys.add(K);
            }
        }
-       int minLength = 99999999;
-        for(ArrayList<String> candidateKey : Keys)
-        {
-            if(candidateKey.size()<minLength){
-                minLength = candidateKey.size();
-            }
-        }
-        ArrayList<ArrayList<String>> CandidateKeys = new ArrayList<ArrayList<String>>();
-        for(ArrayList<String> ck : Keys)
-        {
-            if(ck.size()==minLength)
+       ArrayList<ArrayList<String>> CandidateKeys = new ArrayList<ArrayList<String>>();
+       for(int i=0;i<Keys.size();i++)
+       {
+           boolean candidateKey = true;
+           for(int j=0;j<Keys.size();j++)
+           {
+               if(i!=j){
+                   if(Keys.get(i).containsAll(Keys.get(j)))
+                   {
+                       candidateKey = false;
+                       break;
+                   }
+               }
+               
+           }
+           if(candidateKey)
             {
-                CandidateKeys.add(ck);
+                Collections.sort(Keys.get(i));
+                if(!CandidateKeys.contains(Keys.get(i)))
+                {
+                    CandidateKeys.add(Keys.get(i));
+                }
             }
-        }
+       }
        return CandidateKeys;
     }    
 
