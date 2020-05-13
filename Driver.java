@@ -91,9 +91,13 @@ public class Driver
             }
             for(Relation r : DecomposedTables)
             {
-                System.out.println(" ");
                 System.out.println("Decomposed Relation :"+r.Attributes);
-                System.out.println("Candidate Key : "+r.CandidateKeyList);
+                System.out.println(" ");
+                System.out.println("Candidate Key(s): ");
+                for(ArrayList<String> ck : r.CandidateKeyList){
+                    System.out.println(ck);
+                }
+                System.out.println(" ");
                 double nf = NFChecker.getNF(r, r.FD);
                 if(nf==3.5){System.out.println("Normal Form satisfied : BCNF");}
                 else if(nf==3.0){System.out.println("Normal Form satisfied : 3NF");}
