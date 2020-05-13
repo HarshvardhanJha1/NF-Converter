@@ -367,7 +367,7 @@ public class NormalFormConverter
             }
             if(createflag)
             {
-                System.out.println("First FD : "+fd.A+">"+fd.B);
+                //System.out.println("First FD : "+fd.A+">"+fd.B);
                 for(int j=i+1;j<dummyFD.size();j++)
                 {
                     Collections.sort(dummyFD.get(j).A);
