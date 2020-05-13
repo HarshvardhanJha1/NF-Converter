@@ -25,7 +25,7 @@ public class NFChecker
                     break;
                 }
             }
-            if(flag1==true || flag2==false)
+            if(flag1==false && flag2==true)
                 return false;
         }
         return true;
@@ -95,11 +95,12 @@ public class NFChecker
     static double getNF(Relation r, ArrayList<FunctionalDependency> FD)
     {
         double flag=1;
-        if(is2NF(r, FD))
+        if(NFChecker.is2NF(r, FD)){
             flag=2;
-        if(is3NF(r, FD))
+        }
+        if(NFChecker.is3NF(r, FD))
             flag=3;
-        if(isBCNF(r, FD))
+        if(NFChecker.isBCNF(r, FD))
             flag=3.5;
         return flag;
     }   
