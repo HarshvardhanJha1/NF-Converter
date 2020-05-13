@@ -5,13 +5,28 @@ public class NFChecker
 {
     static boolean is2NF(Relation r, ArrayList<FunctionalDependency> FD)
     {
-        for(ArrayList<String> ck: r.CandidateKeyList)
+        for(int i=0;i<FD.size();i++)
         {
-            for(int i=0;i<FD.size();i++)
+            boolean flag1=true;
+            boolean flag2=true;
+            for(ArrayList<String> ck: r.CandidateKeyList)
             {
                 if(ck.containsAll(FD.get(i).A)&& FD.get(i).A.size()!=ck.size())
-                    return false;
+                {
+                    flag1=false;
+                    break;
+                }
             }
+            for(ArrayList<String> ck: r.CandidateKeyList)
+            {
+                if(ck.containsAll(FD.get(i).B))
+                {
+                    flag2=false;
+                    break;
+                }
+            }
+            if(flag1==false && flag2==true)
+                return false;
         }
         return true;
     }
@@ -76,5 +91,17 @@ public class NFChecker
             if(count==FD.size()){return true;}
         }
         return false;
-    }    
+    }
+    static double getNF(Relation r, ArrayList<FunctionalDependency> FD)
+    {
+        double flag=1;
+        if(NFChecker.is2NF(r, FD)){
+            flag=2;
+        }
+        if(NFChecker.is3NF(r, FD))
+            flag=3;
+        if(NFChecker.isBCNF(r, FD))
+            flag=3.5;
+        return flag;
+    }   
 }
