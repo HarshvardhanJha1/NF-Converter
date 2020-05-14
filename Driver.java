@@ -71,7 +71,7 @@ public class Driver
         else if(normalForm==2.0){System.out.println("Normal Form satisfied : 2NF");}
         else{System.out.println("Normal Form satisfied : 1NF");}
         System.out.println("-------------------");
-        
+        //System.out.println("Find");
         if(normalForm==3.5){
             System.out.println("No higher conversion possible");
         }
@@ -96,6 +96,10 @@ public class Driver
                 System.out.println("Candidate Key(s): ");
                 for(ArrayList<String> ck : r.CandidateKeyList){
                     System.out.println(ck);
+                }
+                System.out.println("Functional Dependencies :");
+                for(FunctionalDependency fde : r.FD){
+                    System.out.println(fde.A+">"+fde.B);
                 }
                 System.out.println(" ");
                 double nf = NFChecker.getNF(r, r.FD);

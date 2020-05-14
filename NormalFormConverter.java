@@ -6,6 +6,7 @@ public class NormalFormConverter
     //Incomplete
     static ArrayList<Relation> toSecondNF(Relation r, ArrayList<FunctionalDependency> FD)
     {
+        
         ArrayList<Relation> DecomposedRelation = new ArrayList<Relation>();
         ArrayList<FunctionalDependency> dummyFD = new ArrayList<FunctionalDependency>();
         ArrayList<String> oldAttr = r.Attributes;
@@ -17,7 +18,7 @@ public class NormalFormConverter
         
         for(int i=0;i<FD.size();i++)
         {
-            
+            //System.out.println("Entered");
             FunctionalDependency fd = FD.get(i);
             boolean partialDependency = false;
             Collections.sort(fd.A);
@@ -68,7 +69,7 @@ public class NormalFormConverter
                     }
                 }
                 dr.Attributes = newTableAttr;
-                dr.FD = TableUtil.findFunctionalDependencies(dr, dummyFD);
+                dr.FD = TableUtil.findFunctionalDependencies(r,dr, dummyFD);
                 dr.CandidateKeyList = TableUtil.findCandidateKeys(dr, dr.FD);
                 dr.SuperKeyList = TableUtil.returnSuperKeys(dr, dr.FD);
                 DecomposedRelation.add(dr);
@@ -76,7 +77,7 @@ public class NormalFormConverter
         }
         Relation oldRel = new Relation();
         oldRel.Attributes = oldAttr;
-        oldRel.FD = TableUtil.findFunctionalDependencies(oldRel, dummyFD);
+        oldRel.FD = TableUtil.findFunctionalDependencies(r,oldRel, dummyFD);
         oldRel.CandidateKeyList = TableUtil.findCandidateKeys(oldRel, oldRel.FD);
         oldRel.SuperKeyList = TableUtil.returnSuperKeys(oldRel, oldRel.FD);
         DecomposedRelation.add(oldRel);
@@ -85,7 +86,7 @@ public class NormalFormConverter
             // System.out.println("Testing "+ck);
             Relation dr = new Relation();
             dr.Attributes = ck;
-            dr.FD = TableUtil.findFunctionalDependencies(dr, dummyFD);
+            dr.FD = TableUtil.findFunctionalDependencies(r,dr, dummyFD);
             dr.CandidateKeyList = TableUtil.findCandidateKeys(dr, dr.FD);
             dr.SuperKeyList = TableUtil.returnSuperKeys(dr, dr.FD);
             DecomposedRelation.add(dr);
@@ -159,7 +160,7 @@ public class NormalFormConverter
             }
             dr.Attributes = TableAttributes;
             dr.PrimaryKeys = X;
-            dr.FD = TableUtil.findFunctionalDependencies(dr, dummyFD);
+            dr.FD = TableUtil.findFunctionalDependencies(r,dr, dummyFD);
             dr.CandidateKeyList = TableUtil.findCandidateKeys(dr, dr.FD);
             dr.SuperKeyList = TableUtil.returnSuperKeys(dr, dr.FD);
             DecomposedRelations.add(dr);
@@ -174,7 +175,7 @@ public class NormalFormConverter
         {
             Relation leftoverRel = new Relation();
             leftoverRel.Attributes = leftoverAttributes;
-            leftoverRel.FD = TableUtil.findFunctionalDependencies(leftoverRel, dummyFD);
+            leftoverRel.FD = TableUtil.findFunctionalDependencies(r,leftoverRel, dummyFD);
             leftoverRel.SuperKeyList = TableUtil.returnSuperKeys(leftoverRel, leftoverRel.FD);
             leftoverRel.CandidateKeyList = TableUtil.findCandidateKeys(leftoverRel, leftoverRel.FD);
             DecomposedRelations.add(leftoverRel);
@@ -187,7 +188,7 @@ public class NormalFormConverter
             //System.out.println("Testing "+ck);
             Relation dr = new Relation();
             dr.Attributes = ck;
-            dr.FD = TableUtil.findFunctionalDependencies(dr, dummyFD);
+            dr.FD = TableUtil.findFunctionalDependencies(r,dr, dummyFD);
             dr.CandidateKeyList = TableUtil.findCandidateKeys(dr, dr.FD);
             dr.SuperKeyList = TableUtil.returnSuperKeys(dr, dr.FD);
             DecomposedRelations.add(dr);
@@ -396,7 +397,7 @@ public class NormalFormConverter
                 
                 Relation r1 = new Relation();
                 r1.Attributes = attr;
-                r1.FD = TableUtil.findFunctionalDependencies(r1, FD);
+                r1.FD = TableUtil.findFunctionalDependencies(r,r1, r.FD);
                 r1.SuperKeyList = TableUtil.returnSuperKeys(r1, r1.FD);
                 r1.CandidateKeyList = TableUtil.findCandidateKeys(r1, r1.FD);
                 for(String f : RHS){
@@ -413,7 +414,7 @@ public class NormalFormConverter
 
         Relation oldtable = new Relation();
         oldtable.Attributes = oldTableAttr;
-        oldtable.FD = TableUtil.findFunctionalDependencies(oldtable, FD);
+        oldtable.FD = TableUtil.findFunctionalDependencies(r,oldtable, r.FD);
         oldtable.SuperKeyList = TableUtil.returnSuperKeys(oldtable, oldtable.FD);
         oldtable.CandidateKeyList = TableUtil.findCandidateKeys(oldtable, oldtable.FD);
         DecomposedRelations.add(oldtable);
@@ -422,7 +423,7 @@ public class NormalFormConverter
         {
             Relation r1 = new Relation();
             r1.Attributes = ck;
-            r1.FD = TableUtil.findFunctionalDependencies(r1, FD);
+            r1.FD = TableUtil.findFunctionalDependencies(r,r1, r.FD);
             r1.CandidateKeyList = TableUtil.findCandidateKeys(r1, r1.FD);
             r1.SuperKeyList = TableUtil.returnSuperKeys(r1, r1.FD);
             CKRelations.add(r1);

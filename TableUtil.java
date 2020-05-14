@@ -145,26 +145,37 @@ public class TableUtil
        return superKeys;
     }
 
-    static ArrayList<FunctionalDependency>  findFunctionalDependencies(Relation r, ArrayList<FunctionalDependency> FD)
+    static ArrayList<FunctionalDependency>  findFunctionalDependencies(Relation oldRel , Relation r, ArrayList<FunctionalDependency> FD)
     {
         ArrayList<FunctionalDependency> relevantFD = new ArrayList<FunctionalDependency>();
-        
-        for(int i=0;i<FD.size();i++)
+        ArrayList<String> newTableAttr = r.Attributes;
+        //System.out.println(r.Attributes);
+        for(int i=1;i<(1<<newTableAttr.size())-1;i++)
         {
-            ArrayList<String> LHS = FD.get(i).A;
-            ArrayList<String> RHS = FD.get(i).B;
-            ArrayList<String> concat = new ArrayList<String>();
-            for(String f : LHS){
-                if(!concat.contains(f)){concat.add(f);}
+            ArrayList<String> subsetAttr = new ArrayList<String>();
+            for(int j=0;j<newTableAttr.size();j++)
+            {
+                if((i&(1<<j))!=0)
+                {
+                    //System.out.println("Entered");
+                    subsetAttr.add(newTableAttr.get(j));
+                }
             }
-            for(String f : RHS){
-                if(!concat.contains(f)){concat.add(f);}
-            }
-            if(r.Attributes.containsAll(concat)){
-                relevantFD.add(FD.get(i));
+            //System.out.println("subset gen "+subsetAttr);
+            ArrayList<String> RHS = FindClosure.findClosure(subsetAttr, FD);
+            for(String f : RHS)
+            {
+                ArrayList<String> right = new ArrayList<String>();
+                right.add(f);
+                if(!subsetAttr.containsAll(right) && r.Attributes.containsAll(right))
+                {
+                    FunctionalDependency fd = new FunctionalDependency(subsetAttr,right);
+                    relevantFD.add(fd);
+                }
             }
         }
 
-        return relevantFD;
+        ArrayList<FunctionalDependency> minRelevantFD = MinimalCover.findMinimalCover(relevantFD);
+        return minRelevantFD;
     }
 }
