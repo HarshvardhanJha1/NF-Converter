@@ -30,7 +30,14 @@ public class NormalFormConverter
                     break;
                 }
             }
-
+            for(ArrayList<String> ck : r.CandidateKeyList)
+            {
+                if(ck.containsAll(fd.B))
+                {
+                    partialDependency = false;
+                    break;
+                }
+            }
             if(partialDependency)
             {
                 
@@ -39,7 +46,7 @@ public class NormalFormConverter
                     dependents.add(f);
                 }
                 
-                for(int j=i+1;j<FD.size();j++)
+                for(int j=0;j<FD.size();j++)
                 {
             
                     if(fd.A.equals(FD.get(j).A) || dependents.containsAll(FD.get(j).A))
@@ -49,8 +56,7 @@ public class NormalFormConverter
                                 dependents.add(f);
                             }
                         }
-                        FD.remove(j);
-                        j--;
+                        
                     }
                 }
 
@@ -120,7 +126,163 @@ public class NormalFormConverter
                 }
             }
         }
-        return DecomposedRelation;
+        ArrayList<Relation> Answer = new ArrayList<Relation>();
+        for(int i=0;i<DecomposedRelation.size();i++){
+            Relation dr1 = DecomposedRelation.get(i);
+            Collections.sort(dr1.Attributes);
+            int count=0;
+            for(int j=0;j<DecomposedRelation.size();j++){
+                if(i!=j)
+                {
+                    Relation dr2 = DecomposedRelation.get(j);
+                    Collections.sort(dr2.Attributes);
+                    if(!dr2.Attributes.containsAll(dr1.Attributes)){
+                        count++;
+                    }
+                }
+            }
+            if(count==DecomposedRelation.size()-1)
+            {
+                Answer.add(dr1);
+            }
+        }
+        return Answer;
+        // ArrayList<Relation> DecomposedRelation = new ArrayList<Relation>();
+        // ArrayList<FunctionalDependency> fullDependencies = new ArrayList<FunctionalDependency>();
+        // ArrayList<FunctionalDependency> partialDependencies = new ArrayList<FunctionalDependency>();
+        // for(FunctionalDependency fd : FD)
+        // {
+        //     fullDependencies.add(fd);
+        // }
+        // for(int i=0;i<fullDependencies.size();i++)
+        // {
+        //     FunctionalDependency fd = fullDependencies.get(i);
+        //     boolean partialKey = false;
+        //     boolean keyAttrOnRHS = false;
+        //     for(ArrayList<String> ck : r.CandidateKeyList)
+        //     {
+        //         if(ck.containsAll(fd.A) && fd.A.size()!=ck.size())
+        //         {
+        //             partialKey = true;
+        //             break;
+        //         }
+        //     }
+        //     for(ArrayList<String> ck : r.CandidateKeyList)
+        //     {
+        //         if(ck.containsAll(fd.B))
+        //         {
+        //             keyAttrOnRHS = true;
+        //             break;
+        //         }
+        //     }
+
+        //     if(partialKey == true && keyAttrOnRHS==false)
+        //     {
+        //         ArrayList<String> RHSClosure = FindClosure.findClosure(fd.B, fullDependencies);
+        //         partialDependencies.add(fd);
+        //         fullDependencies.remove(i);
+        //         for(int j=i;j<fullDependencies.size();j++){
+        //             FunctionalDependency fde = fullDependencies.get(j);
+        //             if(RHSClosure.containsAll(fde.A))
+        //             {
+        //                 partialDependencies.add(fde);
+        //                 fullDependencies.remove(j); j--;
+        //             }
+        //         }
+        //         i--;
+        //     }
+        // }
+
+        
+        // ArrayList<FunctionalDependency> G = new ArrayList<FunctionalDependency>();
+        // ArrayList<String> Xf = new ArrayList<String>();
+        // for(FunctionalDependency f : fullDependencies)
+        // {
+        //     for(String lhs : f.A){
+        //         if(!Xf.contains(lhs)){Xf.add(lhs);}
+        //     }
+        //     for(String rhs : f.B){
+        //         if(!Xf.contains(rhs)){Xf.add(rhs);}
+        //     }
+        // }
+        // for(FunctionalDependency fd : partialDependencies){
+        //     G.add(fd);
+        // }
+
+        // for(int i=0;i<G.size();i++)
+        // {
+        //     FunctionalDependency pd = G.get(i);
+        //     boolean keyAttr=false;
+        //     for(ArrayList<String> ck : r.CandidateKeyList)
+        //     {
+        //         if(ck.containsAll(pd.A)){
+        //             keyAttr = true;
+        //             break;
+        //         }
+        //     }
+        //     if(keyAttr)
+        //     {
+        //         ArrayList<String> GClosure = FindClosure.findClosure(pd.A, G);
+        //         Relation r1 = new Relation();
+        //         r1.Attributes = GClosure;
+        //         r1.FD = TableUtil.findFunctionalDependencies(r, r1, FD);
+        //         r1.SuperKeyList = TableUtil.returnSuperKeys(r1, r1.FD);
+        //         r1.CandidateKeyList = TableUtil.findCandidateKeys(r1, r1.FD);
+        //         DecomposedRelation.add(r1);
+        //         for(int j=i+1;j<G.size();j++)
+        //         {
+        //             FunctionalDependency gd = G.get(j);
+        //             if(GClosure.containsAll(gd.A)){
+        //                 G.remove(j);j--;
+        //             }
+        //         }
+        //         for(String f : pd.B)
+        //         {
+        //             if(!Xf.contains(f)){Xf.remove(f);}
+        //         }
+        //     }
+        // }
+        // if(Xf.size()!=0)
+        // {
+        //     Relation leftover = new Relation();
+        //     leftover.Attributes = Xf;
+        //     leftover.FD = TableUtil.findFunctionalDependencies(r, leftover, FD);
+        //     leftover.SuperKeyList = TableUtil.returnSuperKeys(leftover, leftover.FD);
+        //     leftover.CandidateKeyList = TableUtil.findCandidateKeys(leftover, leftover.FD);
+        //     DecomposedRelation.add(leftover);
+        // }
+        // for(ArrayList<String> ck : r.CandidateKeyList)
+        // {
+        //     //System.out.println("Testing "+ck);
+        //     Relation dr = new Relation();
+        //     dr.Attributes = ck;
+        //     dr.FD = TableUtil.findFunctionalDependencies(r,dr, FD);
+        //     dr.CandidateKeyList = TableUtil.findCandidateKeys(dr, dr.FD);
+        //     dr.SuperKeyList = TableUtil.returnSuperKeys(dr, dr.FD);
+        //     DecomposedRelation.add(dr);
+        // }
+
+        // ArrayList<Relation> Answer = new ArrayList<Relation>();
+        // for(int i=0;i<DecomposedRelation.size();i++){
+        //     Relation dr1 = DecomposedRelation.get(i);
+        //     Collections.sort(dr1.Attributes);
+        //     int count=0;
+        //     for(int j=0;j<DecomposedRelation.size();j++){
+        //         if(i!=j)
+        //         {
+        //             Relation dr2 = DecomposedRelation.get(j);
+        //             Collections.sort(dr2.Attributes);
+        //             if(!dr2.Attributes.containsAll(dr1.Attributes)){
+        //                 count++;
+        //             }
+        //         }
+        //     }
+        //     if(count==DecomposedRelation.size()-1)
+        //     {
+        //         Answer.add(dr1);
+        //     }
+        // }
+        // return DecomposedRelation;
     }
 
     static ArrayList<Relation> toThirdNF(Relation r, ArrayList<FunctionalDependency> FD)
