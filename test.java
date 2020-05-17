@@ -4,12 +4,12 @@ import java.util.Scanner;
 public class test {
     public static void main(String args[])
     {
-        Relation r1 = new Relation();
-        r1.Attributes = new ArrayList<String>();
-        r1.Attributes.add("A");r1.Attributes.add("B");r1.Attributes.add("C");r1.Attributes.add("D");
-        Relation r2 = new Relation();
-        r2.Attributes = new ArrayList<String>();
-        r2.Attributes.add("A");r2.Attributes.add("C");r2.Attributes.add("D");
+        // Relation r1 = new Relation();
+        // r1.Attributes = new ArrayList<String>();
+        // r1.Attributes.add("A");r1.Attributes.add("B");r1.Attributes.add("C");r1.Attributes.add("D");
+        // Relation r2 = new Relation();
+        // r2.Attributes = new ArrayList<String>();
+        // r2.Attributes.add("A");r2.Attributes.add("C");r2.Attributes.add("D");
         Scanner s1 = new Scanner(System.in);
         String userPrompt = "Y"; 
         ArrayList<FunctionalDependency> FD = new ArrayList<FunctionalDependency>();
@@ -41,9 +41,9 @@ public class test {
           
         }
         s1.close();
-        ArrayList<FunctionalDependency> relFD = TableUtil.findFunctionalDependencies(r1, r2, FD);
-        System.out.println(relFD.size());
-        for(FunctionalDependency fd : relFD)
+        ArrayList<FunctionalDependency> minFD = MinimalCover.findMinimalCover(FD);
+        //System.out.println(relFD.size());
+        for(FunctionalDependency fd : minFD)
         {
             System.out.println(fd.A+">"+fd.B);
         }

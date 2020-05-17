@@ -6,6 +6,7 @@ public class MinimalCover
 {
     static ArrayList<FunctionalDependency> findMinimalCover(ArrayList<FunctionalDependency> FD)
     {
+        
         ArrayList<FunctionalDependency> minifiedFD2 = new ArrayList<FunctionalDependency>();
         //Removing compound dependents on RHS
         for(int i=0;i<FD.size();i++)
@@ -19,77 +20,89 @@ public class MinimalCover
                 minifiedFD2.add(newFd);
             }
         }
-
+        
         //Attempting to remove compound elements on LHS
-        ArrayList<FunctionalDependency> minifiedFD1 = new ArrayList<FunctionalDependency>();
-        for(int i=0;i<minifiedFD2.size();i++)
+        
+        ArrayList<FunctionalDependency> minifiedFD1 = minifiedFD2;
+        for(int i=0;i<minifiedFD1.size();i++)
         {
-            //clear minifiedFD1
-            minifiedFD1.clear();
-            for(int j=0;j<minifiedFD2.size();j++){
-                if(i!=j){
-                    minifiedFD1.add(minifiedFD2.get(j));
+            if(minifiedFD1.get(i).A.size()==1)
+            {
+                continue;
+            }
+            else
+            {
+                for(int j=0;j<minifiedFD1.get(i).A.size();j++)
+                {
+                    String l = minifiedFD1.get(i).A.get(j);
+                    if(minifiedFD1.get(i).A.size()==1){
+                        break;
+                    }
+                    String temp = l;
+                    ArrayList<String> remaining = new ArrayList<String>();
+                    //ArrayList<String> removed = new ArrayList<String>();
+                    for(String f : minifiedFD1.get(i).A){
+                        if(!f.equals(l)){
+                            remaining.add(f);
+                        }
+                    }
+                    //System.out.println("Remaining elements "+remaining);
+                    ArrayList<String> removed = new ArrayList<String>();
+                    removed.add(temp);
+                    ArrayList<String> tempClosure = FindClosure.findClosure(removed, minifiedFD1);
+                    //System.out.println("Closure of "+removed+"is "+tempClosure);
+                    ArrayList<String> intersection = new ArrayList<String>();
+                    for(int g=0;g<tempClosure.size();g++)
+                    {
+                        if(remaining.contains(tempClosure.get(g))){
+                            intersection.add(tempClosure.get(g));
+                        }
+                    }
+                    if(intersection.size()!=0){
+                        ArrayList<String> A1 = minifiedFD1.get(i).A;
+                        for(int g=0;g<intersection.size();g++){
+                            if(A1.contains(intersection.get(g))){
+                                A1.remove(intersection.get(g));
+                            }
+                        }
+                        minifiedFD1.get(i).A = A1;
+                    }
+                    
                 }
             }
-            
-            ArrayList<String> B1 = new ArrayList<String>();
-            ArrayList<String> A = new ArrayList<String>();
-            for(String f : minifiedFD2.get(i).A){
-                A.add(f);
-            }
-            ArrayList<String> B = new ArrayList<String>();
-            for(String f : minifiedFD2.get(i).B){
-                B.add(f);
-            }
-            for(String f: B){
-                B1.add(f);
-            }
-            for(int j=0;j<A.size();j++)
-            {
-                String a = A.get(j);
-                A.remove(j);
-                FunctionalDependency lastfd = new FunctionalDependency(A,B1);
-                minifiedFD1.add(lastfd);
-                boolean equivalence1 = FindClosure.checkEquivalence(minifiedFD1, minifiedFD2);
-                boolean equivalence2 = FindClosure.checkEquivalence(minifiedFD2,minifiedFD1);
-                if(!(equivalence1 && equivalence2)){ A.add(a);}
-                else{j--;}
-                Collections.sort(A);
-            } 
+             
         }
     
         //Removal of remaining redundant dependencies
-        ArrayList<FunctionalDependency> dummyFD = new ArrayList<FunctionalDependency>();
-        ArrayList<FunctionalDependency> minifiedFD = new ArrayList<FunctionalDependency>();
-        
-        for(FunctionalDependency f : minifiedFD1){
-            minifiedFD.add(f);
-        }
-        for(int j=0;j<minifiedFD1.size();j++)
+        for(int i=0;i<minifiedFD1.size();i++)
         {
-            dummyFD.clear();
-            for(int k=0;k<minifiedFD1.size();k++){
-                if(k!=j){
-                    dummyFD.add(minifiedFD1.get(k));
-                }
+            ArrayList<FunctionalDependency> tempFD = new ArrayList<FunctionalDependency>();
+            for(int j=0;j<minifiedFD1.size();j++){
+                if(i!=j){tempFD.add(minifiedFD1.get(j));}
             }
-            boolean equivalence1 = FindClosure.checkEquivalence(dummyFD, minifiedFD1);
-            boolean equivalence2 = FindClosure.checkEquivalence(minifiedFD1, dummyFD);
-            if(equivalence1&&equivalence2){
-                
-                FunctionalDependency removeFD = new FunctionalDependency(minifiedFD1.get(j).A,minifiedFD1.get(j).B);
-                minifiedFD1.remove(j); j--;
-                
-                for(int l=0;l<minifiedFD.size();l++){
-                    if(removeFD.equals(minifiedFD.get(l))){
-                        minifiedFD.remove(l);
-                        break;
-                    }
+            
+            FunctionalDependency currFD = new FunctionalDependency(minifiedFD1.get(i).A, minifiedFD1.get(i).B);
+            //System.out.println("Current FD is :"+currFD.A+">"+currFD.B);
+            ArrayList<String> Closure = FindClosure.findClosure(currFD.A, tempFD);
+            //System.out.println("Closure if "+currFD.A+"is"+Closure);
+            if(Closure.containsAll(currFD.B)){
+                minifiedFD1.remove(i);i--;
+            }
+
+        }
+
+        for(int i=0;i<minifiedFD1.size();i++)
+        {
+            for(int j=0;j<minifiedFD1.size();j++)
+            {
+                if(minifiedFD1.get(i).A.equals(minifiedFD1.get(j).A) && i!=j && minifiedFD1.get(i).B.equals(minifiedFD1.get(j).B))
+                {
+                    minifiedFD1.remove(j);j--;
                 }
             }
         }
 
-        return minifiedFD;
+        return minifiedFD1;
 
         // ArrayList<FunctionalDependency> minifiedFD = new ArrayList<FunctionalDependency>();
         // return minifiedFD;

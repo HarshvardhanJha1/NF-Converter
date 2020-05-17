@@ -58,7 +58,11 @@ public class Driver
         r1.SuperKeyList = TableUtil.returnSuperKeys(r1, minifiedFD);
         r1.FD = minifiedFD;
         r1.CandidateKeyList = TableUtil.findCandidateKeys(r1, minifiedFD);
-        
+        // System.out.println("Minimal Cover of FD's are :");
+        // for(FunctionalDependency fd : minifiedFD)
+        // {
+        //     System.out.println(fd.A+">"+fd.B);
+        // }
         System.out.println("The Candidate Keys are :");
         for(ArrayList<String> ck : r1.CandidateKeyList)
         {
@@ -80,7 +84,7 @@ public class Driver
             ArrayList<Relation> DecomposedTables;
             if(normalForm==3)
             {
-                DecomposedTables = NormalFormConverter.toBCNF(r1, r1.FD);
+                DecomposedTables = NormalFormConverter.toBCNF(r1, FD);
             }
             else if(normalForm==2)
             {
